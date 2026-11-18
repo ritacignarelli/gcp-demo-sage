@@ -13,15 +13,21 @@ _NO_DOCUMENTS_CONTEXT = (
 )
 
 
-def build_prompt(question: str, chunks: list[Chunk]) -> str:
+def build_prompt(question: str, chunks: list[Chunk], instructions: str | None = None) -> str:
     context = (
         "\n\n".join(f"[{chunk.source}] {chunk.text}" for chunk in chunks)
         if chunks
         else _NO_DOCUMENTS_CONTEXT
     )
-    return _PROMPT_TEMPLATE.format(context=context, question=question)
+    return _PROMPT_TEMPLATE.format(
+        context=context,
+        question=question,
+        instructions=instructions or "Nessuna istruzione aggiuntiva.",
+    )
 
 
-async def generate_answer(question: str, chunks: list[Chunk]) -> str:
-    prompt = build_prompt(question, chunks)
+async def generate_answer(
+    question: str, chunks: list[Chunk], instructions: str | None = None
+) -> str:
+    prompt = build_prompt(question, chunks, instructions=instructions)
     return await generate_text(prompt)

@@ -34,6 +34,11 @@ class AppConfig(BaseSettings):
     # Ingestion
     chunk_max_chars: int = 1500
 
+    @property
+    def instructions_bucket_name(self) -> str:
+        base = self.resource_prefix or self.project_id
+        return f"{base}-instructions"
+
     @model_validator(mode="after")
     def _apply_resource_prefix(self) -> "AppConfig":
         """Shared-project mode: every person gets their own Firestore database and BQ dataset.
